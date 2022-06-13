@@ -7,17 +7,18 @@ import android.widget.EditText
 import android.widget.TextView
 import com.sintof.studyarch.R
 import com.sintof.studyarch.data.repository.UserRepositoryImpl
+import com.sintof.studyarch.data.storage.sharedprefs.SharedPrefUserStorage
 import com.sintof.studyarch.domain.models.SaveUserNameParam
 import com.sintof.studyarch.domain.models.UserName
 import com.sintof.studyarch.domain.usecase.GetUserNameUseCase
 import com.sintof.studyarch.domain.usecase.SaveUserNameUseCase
 
 class MainActivity : AppCompatActivity() {
-
-    private val userRepository by lazy(LazyThreadSafetyMode.NONE){  UserRepositoryImpl(context = applicationContext)}
+    private val sharedPrefUserStorage by lazy(LazyThreadSafetyMode.NONE){  SharedPrefUserStorage(context = applicationContext) }
+    private val userRepository by lazy(LazyThreadSafetyMode.NONE){  UserRepositoryImpl(userStorage = sharedPrefUserStorage)}
     private val getUserNameUseCase by lazy(LazyThreadSafetyMode.NONE) {  GetUserNameUseCase(userRepository = userRepository) }
     private val saveUserNameUseCase by lazy(LazyThreadSafetyMode.NONE) {   SaveUserNameUseCase(userRepository = userRepository) }
-  
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

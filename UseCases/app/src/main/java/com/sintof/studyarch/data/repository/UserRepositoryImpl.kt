@@ -1,31 +1,29 @@
 package com.sintof.studyarch.data.repository
 
 import android.content.Context
+import com.sintof.studyarch.data.storage.UserStorage
+import com.sintof.studyarch.data.storage.models.User
 import com.sintof.studyarch.domain.models.SaveUserNameParam
 import com.sintof.studyarch.domain.models.UserName
 import com.sintof.studyarch.domain.repository.UserRepository
 
-
-private const val SHARED_PREFS_NAME = "shared_prefs_name"
-private const val KEY_FIRST_NAME = "firstName"
-private const val KEY_LAST_NAME = "lastName"
-
-class UserRepositoryImpl(private val context: Context) : UserRepository {
+class UserRepositoryImpl(private val userStorage: UserStorage) : UserRepository {
 
 
-    val sharedPreferences = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
     override fun saveName(saveParam: SaveUserNameParam): Boolean {
-
-        sharedPreferences.edit().putString(KEY_FIRST_NAME, saveParam.name).apply()
-
-        return true
+        val result = userStorage.save(mapToStorage(saveParam))
+        return result
     }
     override fun getName(): UserName{
+        val user = userStorage.get()
+        return mapToDomain(user)
+    }
 
-        val firstName = sharedPreferences.getString(KEY_FIRST_NAME, "")?: ""
-        val lastName = sharedPreferences.getString(KEY_FIRST_NAME, "")?: "Default lastname"
-
-        return UserName(firstName = firstName, lastName = lastName)
+    private fun mapToDomain(user: User): UserName{
+        return UserName(firstName = user.firstName, lastName = user.lastName)
+    }
+    private fun mapToStorage(saveParam: SaveUserNameParam): User{
+        return User(firstName = saveParam.name, lastName = "")
     }
 
 }
